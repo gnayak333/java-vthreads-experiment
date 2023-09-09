@@ -4,7 +4,7 @@ import example.Util;
 
 import java.util.List;
 
-public interface FraudProcessing {
+public interface Decisioning {
      String SCORES_NOT_AVAILABLE = "Model scores not available.";
      static boolean decision(Transaction transaction, List<Double> scores) {
         Util.log("ID: " + transaction.id() + "; " + "Decision start");

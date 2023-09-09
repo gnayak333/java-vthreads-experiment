@@ -1,6 +1,6 @@
 package example;
 
-import example.domain.FraudProcessing;
+import example.domain.Decisioning;
 import example.domain.ModelService;
 import example.domain.Transaction;
 
@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
 
-public class FraudProcessingCompletableFuture {
+public class DecisioningCompletableFuture {
 
     public static CompletableFuture<Boolean> scoreTransaction(Transaction transaction, List<ModelService> models, ExecutorService es) {
         return CompletableFuture
@@ -39,10 +39,10 @@ public class FraudProcessingCompletableFuture {
                 }, es)
                 // Calculate decision (no IO)
                 .thenApplyAsync(scores ->
-                        FraudProcessing.decision(transaction, scores), es)
+                        Decisioning.decision(transaction, scores), es)
                 // Publish Event (IO)
                 .whenCompleteAsync((decision, err) ->
-                        FraudProcessing.publishEvent(transaction, decision), es);
+                        Decisioning.publishEvent(transaction, decision), es);
     }
 
     public static void main(String[] args) throws Exception {

@@ -1,6 +1,6 @@
 package example;
 
-import example.domain.FraudProcessing;
+import example.domain.Decisioning;
 import example.domain.ModelService;
 import example.domain.Transaction;
 import jdk.incubator.concurrent.StructuredTaskScope;
@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
 
-public class FraudProcessingVirtualThreads {
+public class DecisioningVirtualThreads {
     public static boolean scoreTransaction(Transaction transaction, List<ModelService> models) throws Exception {
         boolean decision;
 
@@ -39,10 +39,10 @@ public class FraudProcessingVirtualThreads {
                     .map(Future::resultNow).toList();
 
             // Calculate decision (no IO)
-            decision = FraudProcessing.decision(transaction, scores);
+            decision = Decisioning.decision(transaction, scores);
 
             // Publish Event (IO)
-            FraudProcessing.publishEvent(transaction, true);
+            Decisioning.publishEvent(transaction, true);
         }
         return decision;
     }
