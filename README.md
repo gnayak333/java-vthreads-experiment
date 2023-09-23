@@ -1,10 +1,17 @@
-# vthreads
+# Virtual Threads vs Completable Futures
+
+Purpose of this exercise is to simulate a scenario of processing high volumes of "requests" 
+where executed logic is dominated by IO. Two implementations are benchmarked, one using CompletableFutures and another Virtual Threads (Loom).
+
+- program takes two arguments, time interval between each request and duration under test.
+- below results are based on 2ms interval between requests and 1 minute duration.
+  - e.g. with 2ms interval we are simulating 500 requests per second
 
 ## Run Examples
 
 `java -Xss1m -Xmx128m -Xms128m -cp target/vthreads-1.0-SNAPSHOT.jar example.DecisioningCompletableFuture 2 60`
 
-`java --enable-preview --add-modules jdk.incubator.concurrent -Xss1m -Xmx128m -Xms128m -cp target/vthreads-1.0-SNAPSHOT.jar example.DecisioningVirtualThreads 2 60`
+`java --enable-preview -Xss1m -Xmx128m -Xms128m -cp target/vthreads-1.0-SNAPSHOT.jar example.DecisioningVirtualThreads 2 60`
 
 
 # Results for local test

@@ -3,7 +3,6 @@ package example;
 import example.domain.Decisioning;
 import example.domain.ModelService;
 import example.domain.Transaction;
-import jdk.incubator.concurrent.StructuredTaskScope;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,13 +29,13 @@ public class DecisioningVirtualThreads {
             // Get results for completed models
             var scores = futures.stream()
                     .peek(x -> {
-                        if (x.state() == Future.State.FAILED) {
-                            Util.log(x.exceptionNow().getMessage());
-                            x.exceptionNow().printStackTrace();
+                        if (x.state() == StructuredTaskScope.Subtask.State.FAILED) {
+                            Util.log(x.exception().getMessage());
+                            x.exception().printStackTrace();
                         }
                     })
-                    .filter(x -> x.state() == Future.State.SUCCESS)
-                    .map(Future::resultNow).toList();
+                    .filter(x -> x.state() == StructuredTaskScope.Subtask.State.SUCCESS)
+                    .map(StructuredTaskScope.Subtask::get).toList();
 
             // Calculate decision (no IO)
             decision = Decisioning.decision(transaction, scores);
@@ -63,7 +62,7 @@ public class DecisioningVirtualThreads {
         var now = System.currentTimeMillis();
 
         try (var scope = new StructuredTaskScope<Boolean>()) {
-            List<Future<Boolean>> fs = new ArrayList<>();
+            List<StructuredTaskScope.Subtask<Boolean>> fs = new ArrayList<>();
             while (System.currentTimeMillis() - now < timeSeconds * 1000) {
                 var f = scope.fork(() ->
                         scoreTransaction(
@@ -75,7 +74,7 @@ public class DecisioningVirtualThreads {
             }
             scope.join();
             var result = fs.stream()
-                    .map(Future::resultNow).toList();
+                    .map(StructuredTaskScope.Subtask::get).toList();
             finalCount += result.size();
             System.out.println("FinalCount: " + finalCount);
             System.out.println(System.currentTimeMillis() - now);
